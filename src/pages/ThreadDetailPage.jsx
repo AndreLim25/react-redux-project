@@ -4,8 +4,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import ThreadItem from '../components/ThreadItem';
 import AddCommentForm from '../components/AddCommentForm';
 import Comments from '../components/Comments';
-import { asyncToggleUpVoteThread, asyncToggleDownVoteThread } from '../states/threads/action';
-import { asyncReceiveThreadDetail, asyncAddComment } from '../states/threadDetail/action';
+import {
+  asyncReceiveThreadDetail,
+  asyncAddComment,
+  asyncToggleUpVoteThread,
+  asyncToggleDownVoteThread,
+  asyncToggleUpVoteComment,
+  asyncToggleDownVoteComment,
+} from '../states/threadDetail/action';
 
 function ThreadDetailPage() {
   const { id } = useParams();
@@ -43,6 +49,14 @@ function ThreadDetailPage() {
     dispatch(asyncToggleDownVoteThread(threadId));
   };
 
+  const onUpVoteComment = (commentId) => {
+    dispatch(asyncToggleUpVoteComment(commentId));
+  };
+
+  const onDownVoteComment = (commentId) => {
+    dispatch(asyncToggleDownVoteComment(commentId));
+  };
+
   return (
     <>
       {threadDetail == null ? (
@@ -62,7 +76,12 @@ function ThreadDetailPage() {
             Comments ({threadDetail.comments.length})
           </h2>
           <AddCommentForm addComment={addComment} />
-          <Comments comments={threadDetail.comments} authUser={authUser.id} />
+          <Comments
+            comments={threadDetail.comments}
+            authUser={authUser.id}
+            upVoteComment={onUpVoteComment}
+            downVoteComment={onDownVoteComment}
+          />
         </>
       )}
     </>

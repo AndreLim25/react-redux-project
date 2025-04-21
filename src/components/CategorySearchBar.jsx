@@ -1,6 +1,6 @@
 import useInput from '../hooks/useInput';
 
-function CategorySearchBar() {
+function CategorySearchBar({ onSearch }) {
   const [category, onCategoryChange] = useInput('');
 
   return (
@@ -17,6 +17,7 @@ function CategorySearchBar() {
         <button
           type="button"
           className="w-3/10 px-5 py-2 bg-[#AAAAAA] rounded-r-sm font-[Poppins] font-bold text-lg text-white cursor-pointer transition peer-focus:bg-[#3D5AFE]"
+          onClick={() => onSearch(category)}
         >
           Search
         </button>

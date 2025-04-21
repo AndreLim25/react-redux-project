@@ -1,29 +1,32 @@
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
 import thumbsUpIcon from '../assets/thumbs-up.png';
 import activeThumbsUpIcon from '../assets/thumbs-up-active.png';
 import thumbsDownIcon from '../assets/thumbs-down.png';
 import activeThumbsDownIcon from '../assets/thumbs-down-active.png';
-import {
-  asyncToggleUpVoteComment,
-  asyncToggleDownVoteComment,
-} from '../states/threadDetail/action';
 import { postedAt } from '../utils';
 
-function CommentItem({ id, content, createdAt, owner, upVotesBy, downVotesBy, authUser }) {
+function CommentItem({
+  id,
+  content,
+  createdAt,
+  owner,
+  upVotesBy,
+  downVotesBy,
+  authUser,
+  upVoteComment,
+  downVoteComment,
+}) {
   const isCommentUpVoted = upVotesBy.includes(authUser);
   const isCommentDownVoted = downVotesBy.includes(authUser);
 
-  const dispatch = useDispatch();
-
   const onUpVoteClick = (event) => {
     event.stopPropagation();
-    dispatch(asyncToggleUpVoteComment(id));
+    upVoteComment(id);
   };
 
   const onDownVoteClick = (event) => {
     event.stopPropagation();
-    dispatch(asyncToggleDownVoteComment(id));
+    downVoteComment(id);
   };
 
   return (
@@ -90,6 +93,8 @@ CommentItem.propTypes = {
   upVotesBy: PropTypes.arrayOf(PropTypes.string),
   downVotesBy: PropTypes.arrayOf(PropTypes.string),
   authUser: PropTypes.string.isRequired,
+  upVoteComment: PropTypes.func.isRequired,
+  downVoteComment: PropTypes.func.isRequired,
 };
 
 export default CommentItem;

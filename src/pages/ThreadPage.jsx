@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import CategorySearchBar from '../components/CategorySearchBar';
@@ -9,6 +9,7 @@ import { asyncToggleUpVoteThread, asyncToggleDownVoteThread } from '../states/th
 
 function ThreadPage() {
   const navigate = useNavigate();
+  const [threadList, setThreadList] = useState([]);
   const { users, threads, authUser } = useSelector((states) => ({
     users: states.users,
     threads: states.threads,
@@ -22,11 +23,46 @@ function ThreadPage() {
     dispatch(asyncPopulateUsersAndThreads());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (threads.length > 0) {
+      const enrichedThreads = threads.map((thread) => ({
+        ...thread,
+        user: users.find((user) => user.id === thread.ownerId),
+        authUser: authUser.id,
+      }));
+      setThreadList(enrichedThreads);
+    }
+  }, [threads, users, authUser]);
+
   const onAddClick = () => {
     navigate('/create-thread');
   };
 
-  const onSearchC
+  const onSearchClick = (key) => {
+    if (key) {
+      const keys = key.toLowerCase().split(', ');
+
+      const result = threads
+        .filter((thread) => {
+          const categories = thread.category.toLowerCase().split(', ');
+          return keys.some((k) => categories.includes(k));
+        })
+        .map((filteredThread) => ({
+          ...filteredThread,
+          user: users.find((user) => user.id === filteredThread.ownerId),
+          authUser: authUser.id,
+        }));
+
+      setThreadList(result);
+    } else {
+      const result = threads.map((thread) => ({
+        ...thread,
+        user: users.find((user) => user.id === thread.ownerId),
+        authUser: authUser.id,
+      }));
+      setThreadList(result);
+    }
+  };
 
   const onUpVoteThread = (threadId) => {
     dispatch(asyncToggleUpVoteThread(threadId));
@@ -36,15 +72,9 @@ function ThreadPage() {
     dispatch(asyncToggleDownVoteThread(threadId));
   };
 
-  const threadList = threads.map((thread) => ({
-    ...thread,
-    user: users.find((user) => user.id === thread.ownerId),
-    authUser: authUser.id,
-  }));
-
   return (
     <>
-      <CategorySearchBar />
+      <CategorySearchBar onSearch={onSearchClick} />
       {threadList ? (
         <Threads
           threads={threadList}

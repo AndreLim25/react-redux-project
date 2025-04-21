@@ -11,14 +11,14 @@ function threadDetailReducer(threadDetail = null, action = {}) {
         ...threadDetail,
         comments: [action.payload.comment, ...threadDetail.comments],
       };
-    case ActionType.TOGGLE_UP_VOTE_THREAD:
+    case ActionType.TOGGLE_UP_VOTE_THREAD_DETAIL:
       return {
         ...threadDetail,
         upVotesBy: threadDetail.upVotesBy.includes(action.payload.userId)
           ? threadDetail.upVotesBy.filter((userId) => userId !== action.payload.userId)
           : threadDetail.upVotesBy.concat(action.payload.userId),
       };
-    case ActionType.TOGGLE_DOWN_VOTE_THREAD:
+    case ActionType.TOGGLE_DOWN_VOTE_THREAD_DETAIL:
       return {
         ...threadDetail,
         downVotesBy: threadDetail.downVotesBy.includes(action.payload.userId)
@@ -29,7 +29,7 @@ function threadDetailReducer(threadDetail = null, action = {}) {
       return {
         ...threadDetail,
         comments: threadDetail.comments.map((comment) => {
-          if (comment.Id === action.payload.commentId) {
+          if (comment.id === action.payload.commentId) {
             return {
               ...comment,
               upVotesBy: comment.upVotesBy.includes(action.payload.userId)
@@ -44,7 +44,8 @@ function threadDetailReducer(threadDetail = null, action = {}) {
       return {
         ...threadDetail,
         comments: threadDetail.comments.map((comment) => {
-          if (comment.Id === action.payload.commentId) {
+          if (comment.id === action.payload.commentId) {
+            console.log(comment);
             return {
               ...comment,
               downVotesBy: comment.downVotesBy.includes(action.payload.userId)
