@@ -88,8 +88,6 @@ function asyncToggleUpVoteThread(threadId) {
         alert(error.message);
         dispatch(toggleUpVoteThreadActionCreator({ threadId, userId: authUser.id }));
       }
-
-      dispatch(hideLoading());
     } else if (!isUpVoted && isDownVoted) {
       dispatch(toggleUpVoteThreadActionCreator({ threadId, userId: authUser.id }));
       dispatch(toggleDownVoteThreadActionCreator({ threadId, userId: authUser.id }));
@@ -101,8 +99,6 @@ function asyncToggleUpVoteThread(threadId) {
         dispatch(toggleUpVoteThreadActionCreator({ threadId, userId: authUser.id }));
         dispatch(toggleDownVoteThreadActionCreator({ threadId, userId: authUser.id }));
       }
-
-      dispatch(hideLoading());
     } else {
       dispatch(toggleUpVoteThreadActionCreator({ threadId, userId: authUser.id }));
 
@@ -112,9 +108,8 @@ function asyncToggleUpVoteThread(threadId) {
         alert(error.message);
         dispatch(toggleUpVoteThreadActionCreator({ threadId, userId: authUser.id }));
       }
-
-      dispatch(hideLoading());
     }
+    dispatch(hideLoading());
   };
 }
 
@@ -145,8 +140,6 @@ function asyncToggleDownVoteThread(threadId) {
         alert(error.message);
         dispatch(toggleDownVoteThreadActionCreator({ threadId, userId: authUser.id }));
       }
-
-      dispatch(hideLoading());
     } else if (!isDownVoted && isUpVoted) {
       dispatch(toggleDownVoteThreadActionCreator({ threadId, userId: authUser.id }));
       dispatch(toggleUpVoteThreadActionCreator({ threadId, userId: authUser.id }));
@@ -158,8 +151,6 @@ function asyncToggleDownVoteThread(threadId) {
         dispatch(toggleDownVoteThreadActionCreator({ threadId, userId: authUser.id }));
         dispatch(toggleUpVoteThreadActionCreator({ threadId, userId: authUser.id }));
       }
-
-      dispatch(hideLoading());
     } else {
       dispatch(toggleDownVoteThreadActionCreator({ threadId, userId: authUser.id }));
 
@@ -169,9 +160,8 @@ function asyncToggleDownVoteThread(threadId) {
         alert(error.message);
         dispatch(toggleDownVoteThreadActionCreator({ threadId, userId: authUser.id }));
       }
-
-      dispatch(hideLoading());
     }
+    dispatch(hideLoading());
   };
 }
 

@@ -5,6 +5,8 @@ const ActionType = {
   RECEIVE_THREAD_DETAIL: 'RECEIVE_THREAD_DETAIL',
   CLEAR_TALK_DETAIL: 'CLEAR_TALK_DETAIL',
   ADD_COMMENT: 'ADD_COMMENT',
+  TOGGLE_UP_VOTE_THREAD: 'TOGGLE_UP_VOTE_THREAD',
+  TOGGLE_DOWN_VOTE_THREAD: 'TOGGLE_DOWN_VOTE_THREAD',
   TOGGLE_UP_VOTE_COMMENT: 'TOGGLE_UP_VOTE_COMMENT',
   TOGGLE_DOWN_VOTE_COMMENT: 'TOGGLE_DOWN_VOTE_COMMENT',
 };
@@ -29,6 +31,26 @@ function addCommentActionCreator(comment) {
     type: ActionType.ADD_COMMENT,
     payload: {
       comment,
+    },
+  };
+}
+
+function toggleUpVoteThreadActionCreator({ threadId, userId }) {
+  return {
+    type: ActionType.TOGGLE_UP_VOTE_THREAD,
+    payload: {
+      threadId,
+      userId,
+    },
+  };
+}
+
+function toggleDownVoteThreadActionCreator({ threadId, userId }) {
+  return {
+    type: ActionType.TOGGLE_DOWN_VOTE_THREAD,
+    payload: {
+      threadId,
+      userId,
     },
   };
 }
@@ -86,6 +108,92 @@ function asyncAddComment({ threadId, content }) {
   };
 }
 
+function asyncToggleUpVoteThread(threadId) {
+  return async (dispatch, getState) => {
+    dispatch(showLoading());
+
+    const { authUser, threadDetail } = getState();
+
+    const isDownVoted = threadDetail.upVotesBy.includes(authUser.id);
+    const isUpVoted = threadDetail.downVotesBy.includes(authUser.id);
+
+    if (!isUpVoted && !isDownVoted) {
+      dispatch(toggleUpVoteThreadActionCreator({ threadId, userId: authUser.id }));
+
+      try {
+        await api.upVoteThread(threadId);
+      } catch (error) {
+        alert(error.message);
+        dispatch(toggleUpVoteThreadActionCreator({ threadId, userId: authUser.id }));
+      }
+    } else if (!isUpVoted && isDownVoted) {
+      dispatch(toggleUpVoteThreadActionCreator({ threadId, userId: authUser.id }));
+      dispatch(toggleDownVoteThreadActionCreator({ threadId, userId: authUser.id }));
+
+      try {
+        await api.upVoteThread(threadId);
+      } catch (error) {
+        alert(error.message);
+        dispatch(toggleUpVoteThreadActionCreator({ threadId, userId: authUser.id }));
+        dispatch(toggleDownVoteThreadActionCreator({ threadId, userId: authUser.id }));
+      }
+    } else {
+      dispatch(toggleUpVoteThreadActionCreator({ threadId, userId: authUser.id }));
+
+      try {
+        await api.neutralizeThreadVote(threadId);
+      } catch (error) {
+        alert(error.message);
+        dispatch(toggleUpVoteThreadActionCreator({ threadId, userId: authUser.id }));
+      }
+    }
+    dispatch(hideLoading());
+  };
+}
+
+function asyncToggleDownVoteThread(threadId) {
+  return async (dispatch, getState) => {
+    dispatch(showLoading());
+
+    const { authUser, threadDetail } = getState();
+
+    const isDownVoted = threadDetail.upVotesBy.includes(authUser.id);
+    const isUpVoted = threadDetail.downVotesBy.includes(authUser.id);
+
+    if (!isDownVoted && !isUpVoted) {
+      dispatch(toggleDownVoteThreadActionCreator({ threadId, userId: authUser.id }));
+
+      try {
+        await api.downVoteThread(threadId);
+      } catch (error) {
+        alert(error.message);
+        dispatch(toggleDownVoteThreadActionCreator({ threadId, userId: authUser.id }));
+      }
+    } else if (!isDownVoted && isUpVoted) {
+      dispatch(toggleDownVoteThreadActionCreator({ threadId, userId: authUser.id }));
+      dispatch(toggleUpVoteThreadActionCreator({ threadId, userId: authUser.id }));
+
+      try {
+        await api.downVoteThread(threadId);
+      } catch (error) {
+        alert(error.message);
+        dispatch(toggleDownVoteThreadActionCreator({ threadId, userId: authUser.id }));
+        dispatch(toggleUpVoteThreadActionCreator({ threadId, userId: authUser.id }));
+      }
+    } else {
+      dispatch(toggleDownVoteThreadActionCreator({ threadId, userId: authUser.id }));
+
+      try {
+        await api.neutralizeThreadVote(threadId);
+      } catch (error) {
+        alert(error.message);
+        dispatch(toggleDownVoteThreadActionCreator({ threadId, userId: authUser.id }));
+      }
+    }
+    dispatch(hideLoading());
+  };
+}
+
 function asyncToggleUpVoteComment(commentId) {
   return async (dispatch, getState) => {
     dispatch(showLoading());
@@ -124,8 +232,6 @@ function asyncToggleUpVoteComment(commentId) {
           })
         );
       }
-
-      dispatch(hideLoading());
     } else if (!isUpVoted && isDownVoted) {
       dispatch(
         toggleUpVoteCommentActionCreator({
@@ -157,8 +263,6 @@ function asyncToggleUpVoteComment(commentId) {
           })
         );
       }
-
-      dispatch(hideLoading());
     } else {
       dispatch(
         toggleUpVoteCommentActionCreator({
@@ -178,9 +282,8 @@ function asyncToggleUpVoteComment(commentId) {
           })
         );
       }
-
-      dispatch(hideLoading());
     }
+    dispatch(hideLoading());
   };
 }
 
@@ -222,8 +325,6 @@ function asyncToggleDownVoteComment(commentId) {
           })
         );
       }
-
-      dispatch(hideLoading());
     } else if (!isDownVoted && isUpVoted) {
       dispatch(
         toggleDownVoteCommentActionCreator({
@@ -255,8 +356,6 @@ function asyncToggleDownVoteComment(commentId) {
           })
         );
       }
-
-      dispatch(hideLoading());
     } else {
       dispatch(
         toggleDownVoteCommentActionCreator({
@@ -276,9 +375,8 @@ function asyncToggleDownVoteComment(commentId) {
           })
         );
       }
-
-      dispatch(hideLoading());
     }
+    dispatch(hideLoading());
   };
 }
 
@@ -287,10 +385,14 @@ export {
   receiveThreadDetailActionCreator,
   clearTalkDetailActionCreator,
   addCommentActionCreator,
+  toggleUpVoteThreadActionCreator,
+  toggleDownVoteThreadActionCreator,
   toggleUpVoteCommentActionCreator,
   toggleDownVoteCommentActionCreator,
   asyncReceiveThreadDetail,
   asyncAddComment,
+  asyncToggleUpVoteThread,
+  asyncToggleDownVoteThread,
   asyncToggleUpVoteComment,
   asyncToggleDownVoteComment,
 };

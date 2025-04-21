@@ -72,7 +72,11 @@ function ThreadItem({
       >
         {title}
       </h1>
-      <p>{body.substring(0, 200).concat('...')}</p>
+      {document.title === 'GameHub | Threads' ? (
+        <p>{body.substring(0, 200).concat('...')}</p>
+      ) : (
+        <p>{body}</p>
+      )}
       <div className="flex justify-between items-center">
         <div className="interaction flex gap-7">
           <button className="flex items-center gap-1">
@@ -128,5 +132,20 @@ function ThreadItem({
     </article>
   );
 }
+
+ThreadItem.propTypes = {
+  id: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  body: PropTypes.string.isRequired,
+  category: PropTypes.string.isRequired,
+  createdAt: PropTypes.string.isRequired,
+  upVotesBy: PropTypes.arrayOf(PropTypes.string),
+  downVotesBy: PropTypes.arrayOf(PropTypes.string),
+  totalComments: PropTypes.number,
+  user: PropTypes.objectOf(PropTypes.string).isRequired,
+  authUser: PropTypes.string.isRequired,
+  upVoteThread: PropTypes.func.isRequired,
+  downVoteThread: PropTypes.func.isRequired,
+};
 
 export default ThreadItem;

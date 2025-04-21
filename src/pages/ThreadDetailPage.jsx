@@ -5,12 +5,7 @@ import ThreadItem from '../components/ThreadItem';
 import AddCommentForm from '../components/AddCommentForm';
 import Comments from '../components/Comments';
 import { asyncToggleUpVoteThread, asyncToggleDownVoteThread } from '../states/threads/action';
-import {
-  asyncReceiveThreadDetail,
-  asyncAddComment,
-  asyncToggleUpVoteComment,
-  asyncToggleDownVoteComment,
-} from '../states/threadDetail/action';
+import { asyncReceiveThreadDetail, asyncAddComment } from '../states/threadDetail/action';
 
 function ThreadDetailPage() {
   const { id } = useParams();
@@ -25,6 +20,17 @@ function ThreadDetailPage() {
     dispatch(asyncReceiveThreadDetail(id));
   }, [id, dispatch]);
 
+  useEffect(() => {
+    if (threadDetail) {
+      if (threadDetail.title.length > 10) {
+        document.title = `GameHub | ${threadDetail.title.substring(0, 10).concat('...')}`;
+      } else {
+        document.title = `GameHub | ${threadDetail.title}`;
+      }
+      document.getElementsByTagName('h1')[0].style.color = 'black';
+    }
+  }, [threadDetail]);
+
   const addComment = ({ content }) => {
     dispatch(asyncAddComment({ threadId: id, content }));
   };
@@ -35,14 +41,6 @@ function ThreadDetailPage() {
 
   const onDownVoteThread = (threadId) => {
     dispatch(asyncToggleDownVoteThread(threadId));
-  };
-
-  const onUpVoteComment = (commentId) => {
-    dispatch(asyncToggleUpVoteComment(commentId));
-  };
-
-  const onDownVoteComment = (commentId) => {
-    dispatch(asyncToggleDownVoteComment(commentId));
   };
 
   return (
@@ -64,12 +62,7 @@ function ThreadDetailPage() {
             Comments ({threadDetail.comments.length})
           </h2>
           <AddCommentForm addComment={addComment} />
-          <Comments
-            comments={threadDetail.comments}
-            authUser={authUser.id}
-            upVoteComment={onUpVoteComment}
-            downVoteComment={onDownVoteComment}
-          />
+          <Comments comments={threadDetail.comments} authUser={authUser.id} />
         </>
       )}
     </>

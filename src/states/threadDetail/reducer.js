@@ -11,6 +11,20 @@ function threadDetailReducer(threadDetail = null, action = {}) {
         ...threadDetail,
         comments: [action.payload.comment, ...threadDetail.comments],
       };
+    case ActionType.TOGGLE_UP_VOTE_THREAD:
+      return {
+        ...threadDetail,
+        upVotesBy: threadDetail.upVotesBy.includes(action.payload.userId)
+          ? threadDetail.upVotesBy.filter((userId) => userId !== action.payload.userId)
+          : threadDetail.upVotesBy.concat(action.payload.userId),
+      };
+    case ActionType.TOGGLE_DOWN_VOTE_THREAD:
+      return {
+        ...threadDetail,
+        downVotesBy: threadDetail.downVotesBy.includes(action.payload.userId)
+          ? threadDetail.downVotesBy.filter((userId) => userId !== action.payload.userId)
+          : threadDetail.downVotesBy.concat(action.payload.userId),
+      };
     case ActionType.TOGGLE_UP_VOTE_COMMENT:
       return {
         ...threadDetail,

@@ -26,6 +26,8 @@ function ThreadPage() {
     navigate('/create-thread');
   };
 
+  const onSearchC
+
   const onUpVoteThread = (threadId) => {
     dispatch(asyncToggleUpVoteThread(threadId));
   };
